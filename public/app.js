@@ -68,24 +68,45 @@ document.addEventListener('DOMContentLoaded', () => {
             addBtn.textContent = 'Add Magnet';
 
             if (data.error === 'CAPTCHA_REQUIRED') {
+                // FORCE DISPLAY
                 captchaContainer.classList.remove('hidden');
+                captchaContainer.style.display = 'block';
                 localStorage.setItem('pending_magnet', magnet);
 
-                alert('CAPTCHA required. Please resolve the challenge displayed below.');
+                // DEBUGGING: Dump everything to the user so they can report it
+                alert('CAPTCHA DATA RECEIVED.\nCheck the gray box below for details.');
 
-                console.log('CAPTCHA Data:', data.data);
-                let captchaUrl = data.data.url || (data.data.details && data.data.details.url);
+                const debugInfo = JSON.stringify(data.data, null, 2);
+                console.log('CAPTCHA Data Full:', debugInfo);
 
-                if (!captchaUrl && Array.isArray(data.data.details)) {
-                    const detailWithUrl = data.data.details.find(d => d.url);
-                    if (detailWithUrl) captchaUrl = detailWithUrl.url;
+                let captchaUrl = data.data.url;
+
+                // Log logic for finding URL
+                if (data.data.details) {
+                    if (Array.isArray(data.data.details)) {
+                        const detailWithUrl = data.data.details.find(d => d.url);
+                        if (detailWithUrl) captchaUrl = detailWithUrl.url;
+                    } else if (data.data.details.url) {
+                        captchaUrl = data.data.details.url;
+                    }
                 }
 
                 if (captchaUrl) {
-                    captchaFrameContainer.innerHTML = `<iframe src="${captchaUrl}" width="100%" height="450px" frameborder="0"></iframe>`;
+                    alert('Trying to load URL: ' + captchaUrl);
+                    captchaFrameContainer.innerHTML = `<iframe src="${captchaUrl}" width="100%" height="500px" frameborder="1" style="border: 2px solid red; background: white;"></iframe>`;
                 } else {
-                    captchaFrameContainer.innerHTML = `<p>No direct CAPTCHA URL found. Please check logs/console for details on how to solve.</p>`;
+                    // Render the raw data so the user can see what's wrong
+                    captchaFrameContainer.innerHTML = `
+                        <div style="background: #f0f0f0; padding: 10px; border: 1px solid #ccc; white-space: pre-wrap;">
+                            <strong>NO URL FOUND!</strong>
+                            <br>
+                            Here is the data we got:
+                            <br>
+                            ${debugInfo}
+                        </div>
+                    `;
                     console.warn('Could not extract CAPTCHA URL from:', data.data);
+                    alert('No CAPTCHA URL found. See the data dump on the page.');
                 }
 
             } else if (data.success) {
