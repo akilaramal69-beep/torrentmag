@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PikPak Magnet Downloader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PikPak Magnet Downloader</h1>
+        <div class="input-group">
+            <input type="text" id="magnet-input" placeholder="Paste magnet link here">
+            <button id="add-btn">Add Magnet</button>
+        </div>
+        <div id="captcha-container" class="hidden">
+            <h3>CAPTCHA Required</h3>
+            <p>Please solve the CAPTCHA to proceed.</p>
+            <!-- In a real scenario, we might render a CAPTCHA image here if the API provides one, 
+                 or a link to a page where the user can solve it and get a token. 
+                 For now, we assume the user has a way to get the token or we implementing a placeholder. -->
+            <input type="text" id="captcha-input" placeholder="Enter CAPTCHA token">
+            <button id="submit-captcha">Submit CAPTCHA</button>
+        </div>
+        <div id="file-list">
+            <!-- Files will be listed here -->
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
