@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function checkTaskStatus(taskId) {
         try {
-            const response = await fetch(\`/api/files/\${taskId}\`);
+            const response = await fetch(`/api/files/${taskId}`);
             const data = await response.json();
-             if (data.error === 'CAPTCHA_REQUIRED') {
+            if (data.error === 'CAPTCHA_REQUIRED') {
                 captchaContainer.classList.remove('hidden');
                 return;
             }
@@ -98,22 +98,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ token })
             });
             const data = await response.json();
-            
+
             if (data.success) {
                 captchaContainer.classList.add('hidden');
                 alert('Captcha solved! calculated. Retrying pending action...');
-                
+
                 const pendingMagnet = localStorage.getItem('pending_magnet');
-                 if (pendingMagnet) {
-                     // Retry adding the magnet
-                     addBtn.click();
-                     localStorage.removeItem('pending_magnet');
-                 }
+                if (pendingMagnet) {
+                    // Retry adding the magnet
+                    addBtn.click();
+                    localStorage.removeItem('pending_magnet');
+                }
             } else {
                 alert('Failed to submit CAPTCHA: ' + (data.error || 'Unknown error'));
             }
         } catch (error) {
-             alert('Error: ' + error.message);
+            alert('Error: ' + error.message);
         }
     });
 
