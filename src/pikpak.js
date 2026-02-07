@@ -64,7 +64,8 @@ class PikPakClient {
             upload_type: 'UPLOAD_TYPE_URL',
             url: {
                 url: magnetLink
-            }
+            },
+            name: '' // PikPak often requires a name field, even if empty
         };
 
         try {
@@ -76,11 +77,16 @@ class PikPakClient {
             });
             return { success: true, task: response.data };
         } catch (error) {
-            console.error('Add magnet failed:', error.response ? error.response.data : error.message);
-            if (error.response && error.response.status === 401) {
-                const loginResult = await this.login();
-                if (!loginResult.success) return loginResult;
-                return this.addMagnet(magnetLink);
+            console.error('Add magnet failed:', error.response ? JSON.stringify(error.response.data) : error.message);
+            if (error.response) {
+                console.error('Error status:', error.response.status);
+                console.error('Error headers:', JSON.stringify(error.response.headers));
+
+                if (error.response.status === 401) {
+                    const loginResult = await this.login();
+                    if (!loginResult.success) return loginResult;
+                    return this.addMagnet(magnetLink);
+                }
             }
             throw error;
         }
