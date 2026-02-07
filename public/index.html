@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PikPak Magnet Downloader</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body>
@@ -20,6 +21,10 @@
             <p>Please resolve the CAPTCHA below or via the link, then enter the token/verification code if provided, or
                 just click "Submit" if it was a slide/click challenge.</p>
             <div id="captcha-frame-container"></div>
+            <!-- Google ReCaptcha Widget Container -->
+            <div id="recaptcha-widget" class="g-recaptcha" data-sitekey="6LecS80pAAAAAL-2v9qK7F_Kq_e_s-F-uF9F-7b"
+                data-callback="onRecaptchaSuccess"></div>
+
             <input type="text" id="captcha-input" placeholder="Enter CAPTCHA token (if provided)">
             <button id="submit-captcha">Submit / I have verified</button>
         </div>
@@ -27,7 +32,7 @@
             <!-- Files will be listed here -->
         </div>
     </div>
-    <script src="app.js"></script>
+    <script src="app.js?v=debug2"></script>
 </body>
 
 </html>

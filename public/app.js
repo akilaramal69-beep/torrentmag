@@ -1,3 +1,9 @@
+// Global callback for ReCaptcha
+window.onRecaptchaSuccess = function (token) {
+    console.log('ReCaptcha Success, token:', token);
+    document.getElementById('captcha-input').value = token;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const magnetInput = document.getElementById('magnet-input');
     const addBtn = document.getElementById('add-btn');
@@ -68,21 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
             addBtn.textContent = 'Add Magnet';
 
             if (data.error === 'CAPTCHA_REQUIRED') {
-                // FORCE DISPLAY
                 captchaContainer.classList.remove('hidden');
                 captchaContainer.style.display = 'block';
                 localStorage.setItem('pending_magnet', magnet);
 
-                // DEBUGGING: Dump everything to the user so they can report it
-                alert('CAPTCHA DATA RECEIVED.\nCheck the gray box below for details.');
-
-                const debugInfo = JSON.stringify(data.data, null, 2);
-                console.log('CAPTCHA Data Full:', debugInfo);
-
                 let captchaUrl = data.data.url;
-
-                // Log logic for finding URL
-                if (data.data.details) {
+                if (!captchaUrl && data.data.details) {
                     if (Array.isArray(data.data.details)) {
                         const detailWithUrl = data.data.details.find(d => d.url);
                         if (detailWithUrl) captchaUrl = detailWithUrl.url;
@@ -92,21 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (captchaUrl) {
-                    alert('Trying to load URL: ' + captchaUrl);
-                    captchaFrameContainer.innerHTML = `<iframe src="${captchaUrl}" width="100%" height="500px" frameborder="1" style="border: 2px solid red; background: white;"></iframe>`;
+                    captchaFrameContainer.innerHTML = `<iframe src="${captchaUrl}" width="100%" height="500px" frameborder="0"></iframe>`;
+                    document.getElementById('recaptcha-widget').style.display = 'none';
                 } else {
-                    // Render the raw data so the user can see what's wrong
-                    captchaFrameContainer.innerHTML = `
-                        <div style="background: #f0f0f0; padding: 10px; border: 1px solid #ccc; white-space: pre-wrap;">
-                            <strong>NO URL FOUND!</strong>
-                            <br>
-                            Here is the data we got:
-                            <br>
-                            ${debugInfo}
-                        </div>
-                    `;
-                    console.warn('Could not extract CAPTCHA URL from:', data.data);
-                    alert('No CAPTCHA URL found. See the data dump on the page.');
+                    // Show ReCaptcha widget
+                    captchaFrameContainer.innerHTML = '<p>Please complete the safety verification below:</p>';
+                    document.getElementById('recaptcha-widget').style.display = 'block';
+                    // Reset recaptcha if it was already rendered
+                    if (window.grecaptcha) {
+                        try { grecaptcha.reset(); } catch (e) { }
+                    }
                 }
 
             } else if (data.success) {
