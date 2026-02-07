@@ -69,7 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.error === 'CAPTCHA_REQUIRED') {
                 captchaContainer.classList.remove('hidden');
                 localStorage.setItem('pending_magnet', magnet);
-                alert('CAPTCHA required. Please check the logs or solve it below.');
+
+                alert('CAPTCHA required. Please resolve the challenge displayed below.');
+
+                console.log('CAPTCHA Data:', data.data);
+                let captchaUrl = data.data.url || (data.data.details && data.data.details.url);
+
+                if (!captchaUrl && Array.isArray(data.data.details)) {
+                    const detailWithUrl = data.data.details.find(d => d.url);
+                    if (detailWithUrl) captchaUrl = detailWithUrl.url;
+                }
+
+                if (captchaUrl) {
+                    captchaFrameContainer.innerHTML = `<iframe src="${captchaUrl}" width="100%" height="450px" frameborder="0"></iframe>`;
+                } else {
+                    captchaFrameContainer.innerHTML = `<p>No direct CAPTCHA URL found. Please check logs/console for details on how to solve.</p>`;
+                    console.warn('Could not extract CAPTCHA URL from:', data.data);
+                }
+
             } else if (data.success) {
                 tasks.push({ id: data.task.task.id, status: 'started', name: data.task.task.name });
                 localStorage.setItem('pikpak_tasks', JSON.stringify(tasks));
