@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBtn = document.getElementById('add-btn');
     const fileList = document.getElementById('file-list');
     const captchaContainer = document.getElementById('captcha-container');
+    const captchaFrameContainer = document.getElementById('captcha-frame-container');
     const captchaInput = document.getElementById('captcha-input');
     const submitCaptchaBtn = document.getElementById('submit-captcha');
 
@@ -118,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 captchaContainer.classList.add('hidden');
-                document.getElementById('captcha-frame-container').innerHTML = '';
+                captchaFrameContainer.innerHTML = '';
                 alert('Verification submitted. Retrying pending action...');
 
                 const pendingMagnet = localStorage.getItem('pending_magnet');
