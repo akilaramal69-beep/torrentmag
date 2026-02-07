@@ -14,10 +14,14 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 const client = new PikPakClient(process.env.PIKPAK_USER, process.env.PIKPAK_PASS);
 
-// Middleware to check login status before processing requests that need it?
-// The client handles login internally, so we might just forward the requests.
+if (!process.env.PIKPAK_USER || !process.env.PIKPAK_PASS) {
+    console.error('ERROR: PIKPAK_USER or PIKPAK_PASS environment variables are missing!');
+} else {
+    console.log(`Starting server with user: ${process.env.PIKPAK_USER}`);
+}
 
 app.post('/api/magnet', async (req, res) => {
+    console.log('Received magnet request:', req.body);
     const { magnet } = req.body;
     if (!magnet) {
         return res.status(400).json({ error: 'Magnet link is required' });
@@ -25,11 +29,13 @@ app.post('/api/magnet', async (req, res) => {
 
     try {
         const result = await client.addMagnet(magnet);
+        console.log('Add magnet result:', result);
         if (result.success === false && result.error === 'CAPTCHA_REQUIRED') {
-            return res.status(403).json(result); // Trigger CAPTCHA flow on frontend
+            return res.status(403).json(result);
         }
         res.json(result);
     } catch (error) {
+        console.error('API Error:', error);
         res.status(500).json({ error: error.message });
     }
 });

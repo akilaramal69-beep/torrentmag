@@ -48,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const magnet = magnetInput.value.trim();
         if (!magnet) return alert('Please enter a magnet link');
 
+        console.log('Sending magnet:', magnet);
+        addBtn.disabled = true;
+        addBtn.textContent = 'Adding...';
+
         try {
             const response = await fetch('/api/magnet', {
                 method: 'POST',
@@ -55,23 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ magnet })
             });
 
+            console.log('Response status:', response.status);
             const data = await response.json();
+            console.log('Response data:', data);
+
+            addBtn.disabled = false;
+            addBtn.textContent = 'Add Magnet';
 
             if (data.error === 'CAPTCHA_REQUIRED') {
                 captchaContainer.classList.remove('hidden');
-                // Temporarily store the magnet to retry after captcha
                 localStorage.setItem('pending_magnet', magnet);
+                alert('CAPTCHA required. Please check the logs or solve it below.');
             } else if (data.success) {
                 tasks.push({ id: data.task.task.id, status: 'started', name: data.task.task.name });
                 localStorage.setItem('pikpak_tasks', JSON.stringify(tasks));
                 renderTasks();
                 magnetInput.value = '';
-                // Start polling for status
                 setTimeout(() => checkTaskStatus(data.task.task.id), 2000);
             } else {
                 alert('Failed to add magnet: ' + (data.error || 'Unknown error'));
             }
         } catch (error) {
+            console.error('Fetch error:', error);
+            addBtn.disabled = false;
+            addBtn.textContent = 'Add Magnet';
             alert('Error: ' + error.message);
         }
     });
