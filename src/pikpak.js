@@ -44,7 +44,7 @@ class PikPakClient {
             return { success: true };
         } catch (error) {
             console.error('Login failed:', error.response ? error.response.data : error.message);
-            if (error.response && error.response.data.error_code === 4100) {
+            if (error.response && (error.response.data.error_code === 4100 || error.response.data.error_code === 4001)) {
                 return { success: false, error: 'CAPTCHA_REQUIRED', data: error.response.data };
             }
             throw error;
