@@ -60,13 +60,15 @@ class PikPakClient {
         const url = 'https://api-drive.mypikpak.com/drive/v1/files';
         const payload = {
             kind: 'drive#file',
-            parent_id: '',
             upload_type: 'UPLOAD_TYPE_URL',
             url: {
                 url: magnetLink
             },
-            name: '' // PikPak often requires a name field, even if empty
+            name: ''
         };
+
+        // Only add parent_id if specifically requested (not implemented yet, but for future proofing)
+        // Leaving it undefined/null often defaults to root or correct behavior.
 
         try {
             const response = await axios.post(url, payload, {

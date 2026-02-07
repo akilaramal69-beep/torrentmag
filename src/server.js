@@ -36,7 +36,11 @@ app.post('/api/magnet', async (req, res) => {
         res.json(result);
     } catch (error) {
         console.error('API Error:', error);
-        res.status(500).json({ error: error.message });
+        if (error.response && error.response.data) {
+            res.status(error.response.status).json(error.response.data);
+        } else {
+            res.status(500).json({ error: error.message });
+        }
     }
 });
 
