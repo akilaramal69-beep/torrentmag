@@ -118,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 captchaContainer.classList.add('hidden');
-                alert('Captcha solved! calculated. Retrying pending action...');
+                document.getElementById('captcha-frame-container').innerHTML = '';
+                alert('Verification submitted. Retrying pending action...');
 
                 const pendingMagnet = localStorage.getItem('pending_magnet');
                 if (pendingMagnet) {
